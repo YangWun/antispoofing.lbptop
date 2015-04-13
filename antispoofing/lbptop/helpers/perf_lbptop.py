@@ -3,7 +3,7 @@
 # Fri 20 Jul 03:30:00 2012
 
 import os
-import bob
+import bob.measure
 import numpy
 from antispoofing.utils.ml import *
 

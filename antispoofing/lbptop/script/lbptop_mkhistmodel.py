@@ -7,7 +7,7 @@
 
 import os, sys
 import argparse
-import bob
+import bob.io.base
 import numpy
 
 from .. import spoof
@@ -41,7 +41,7 @@ def main():
     parser.error("input directory does not exist")
   
   if not os.path.exists(args.outputdir): # if the output directory doesn't exist, create it
-    bob.db.utils.makedirs_safe(args.outputdir)
+    bob.io.base.create_directories_safe(args.outputdir)
     
 
   ###################
@@ -59,7 +59,7 @@ def main():
   train_real = spoof.create_full_dataset(trainReal,args.inputdir);
   
   models = ['model_hist_real_XY','model_hist_real_XT','model_hist_real_YT','model_hist_real_XT_YT','model_hist_real_XY_XT_YT']
-  histmodelsfile = bob.io.HDF5File(os.path.join(args.outputdir, 'histmodelsfile.hdf5'),'w')
+  histmodelsfile = bob.io.base.HDF5File(os.path.join(args.outputdir, 'histmodelsfile.hdf5'),'w')
 
   if(verbose):
     print "Creating the model for each frame and its combinations..."

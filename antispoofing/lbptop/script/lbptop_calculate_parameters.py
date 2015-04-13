@@ -8,7 +8,9 @@
 
 import os, sys
 import argparse
-import bob
+import bob.ip.base
+import bob.io.video
+import bob.ip.color
 import numpy
 
 from .. import spoof
@@ -137,7 +139,7 @@ def main():
 
 
   #Instancianting the Tan & Triggs algorithm (The default configurations only)
-  tantriggs = bob.ip.TanTriggs()
+  tantriggs = bob.ip.base.TanTriggs()
 
 
   # processing each video
@@ -147,7 +149,7 @@ def main():
     filename = str(obj.videofile(inputDir))
 
     #Loading the video
-    input = bob.io.VideoReader(filename)
+    input = bob.io.video.reader(filename)
 
     #Loading the face locations
     if string.find(database.short_description(), "CASIA") != -1:
@@ -167,7 +169,7 @@ def main():
     #Converting all frames to grayscale
     grayFrames = numpy.zeros(shape=(nFrames,vin.shape[2],vin.shape[3]))
     for i in range(nFrames):
-      grayFrames[i] = bob.ip.rgb_to_gray(vin[i,:,:,:])
+      grayFrames[i] = bob.ip.color.rgb_to_gray(vin[i,:,:,:])
       if(tan_triggs):
         grayFrames[i] = tantriggs(grayFrames[i])
 
@@ -194,7 +196,7 @@ def main():
         histXY,histXT,histYT = spoof.lbptophist(normalizedVolume,nXY,nXT,nYT,rX,rY,r,cXY,cXT,cYT,lbptypeXY,lbptypeXT,lbptypeYT,elbptypeXY,elbptypeXT,elbptypeYT)
         
 	    #Concatenating in columns
-        if(histLocalVolumeXY == None):
+        if(histLocalVolumeXY is None):
           histLocalVolumeXY = histXY
           histLocalVolumeXT = histXT
           histLocalVolumeYT = histYT
@@ -204,12 +206,12 @@ def main():
           histLocalVolumeYT= numpy.concatenate((histLocalVolumeYT, histYT),axis=1)
 
       #Concatenating in rows
-      if(histVolumeXY == None):
+      if(histVolumeXY is None):
         histVolumeXY= histLocalVolumeXY
         histVolumeXT= histLocalVolumeXT
         histVolumeYT= histLocalVolumeYT
       else:
-        if(histLocalVolumeXY!=None):
+        if(not histLocalVolumeXY is None):
           histVolumeXY= numpy.concatenate((histVolumeXY, histLocalVolumeXY),axis=0)
           histVolumeXT= numpy.concatenate((histVolumeXT, histLocalVolumeXT),axis=0)
           histVolumeYT= numpy.concatenate((histVolumeYT, histLocalVolumeYT),axis=0)

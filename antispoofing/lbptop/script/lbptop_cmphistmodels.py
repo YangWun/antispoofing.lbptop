@@ -9,7 +9,8 @@ The details about the procedure are described in the paper: "LBP-TOP based count
 import os, sys
 import argparse
 import numpy
-import bob
+import bob.io.base
+import bob.measure
 
 from .. import spoof
 from ..spoof import calclbptop
@@ -52,7 +53,7 @@ def main():
     parser.error("input directory does not exist")
 
   if not os.path.exists(args.outputdir): # if the output directory doesn't exist, create it
-    bob.db.utils.makedirs_safe(args.outputdir)
+    bob.io.base.create_directories_safe(args.outputdir)
     
   if(verbose):
     print "Output directory set to \"%s\"" % args.outputdir
@@ -77,7 +78,7 @@ def main():
   lines  = ['r','b','y','g^','c']
 
   # loading the histogram models
-  histmodelsfile = bob.io.HDF5File(os.path.join(args.inputmodeldir, 'histmodelsfile.hdf5'),'r')
+  histmodelsfile = bob.io.base.HDF5File(os.path.join(args.inputmodeldir, 'histmodelsfile.hdf5'),'r')
   tf = open(os.path.join(args.outputdir, 'CHI-2_perf_table.txt'), 'w')
 
   for i in range(len(models)):

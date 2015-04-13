@@ -11,7 +11,9 @@ The procedure is described in the paper: "LBP-TOP based countermeasure against f
 
 import os, sys
 import argparse
-import bob
+import bob.io.base
+import bob.learn.libsvm
+import bob.learn.linear
 import numpy
 
 #from .. import spoof
@@ -122,8 +124,8 @@ def main():
 
      #Loading the PCA machine
     if(pcaFile != ''):
-      hdf5File_pca    = bob.io.HDF5File(pcaFile,openmode_string='r')
-      pcaMachine      = bob.machine.LinearMachine(hdf5File_pca)
+      hdf5File_pca    = bob.io.base.HDF5File(pcaFile,openmode_string='r')
+      pcaMachine      = bob.learn.linear.Machine(hdf5File_pca)
       featureVector   = pca.pcareduce(pcaMachine, featureVector);
 
     #Loaging the normalization file for the min,max normalization
@@ -133,11 +135,11 @@ def main():
 
     #Loading the machine
     if(machineType=='Linear'):
-      hdf5File_linear = bob.io.HDF5File(machineFile,openmode_string='r')
-      machine         = bob.machine.LinearMachine(hdf5File_linear)
+      hdf5File_linear = bob.io.base.HDF5File(machineFile,openmode_string='r')
+      machine         = bob.learn.linear.Machine(hdf5File_linear)
       scores          = lda.get_scores(machine, featureVector)
     elif(machineType=='SVM'):
-      machine = bob.machine.SupportVector(machineFile)
+      machine = bob.learn.libsvm.Machine(machineFile)
       scores  = svmCountermeasure.svm_predict(machine, featureVector)
 
     if(icb2013):

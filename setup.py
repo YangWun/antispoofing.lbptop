@@ -4,12 +4,15 @@
 
 from setuptools import setup, find_packages
 
+# Define package version
+version = open("version.txt").read().rstrip()
+
 # The only thing we do in this file is to call the setup() function with all
 # parameters that define our package.
 setup(
 
     name='antispoofing.lbptop',
-    version='1.0.4',
+    version=version,
     description='LBP-TOP based countermeasure against facial spoofing attacks',
     url='http://pypi.python.org/pypi/antispoofing.lbptop',
     license='GPLv3',
@@ -22,10 +25,11 @@ setup(
     include_package_data = True,
 
     install_requires=[
-        "bob >= 1.2.0",      # base signal proc./machine learning library
-        "xbob.db.replay >= 1.0.4", # Replay-Attack database
-        "xbob.db.casia_fasd >= 1.1.0", #CASIA database
-        "antispoofing.utils >= 1.1.3",  #Utils Package
+      "setuptools",
+      "bob.db.base", #1.1.0
+      "bob.db.replay", # Replay-Attack database
+      "bob.db.casia_fasd", # CASIA database
+      "antispoofing.utils",  # Utils Package
     ],
 
     namespace_packages = [

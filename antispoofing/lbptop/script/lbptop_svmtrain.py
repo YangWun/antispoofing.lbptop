@@ -10,7 +10,8 @@ The details about the procedure are described in the paper: "LBP-TOP based count
 
 import os, sys
 import argparse
-import bob
+import bob.io.base
+import bob.measure
 import numpy
 
 from .. import spoof
@@ -60,7 +61,7 @@ def main():
     parser.error("input directory does not exist")
 
   if not os.path.exists(outputDir): # if the output directory doesn't exist, create it
-    bob.db.utils.makedirs_safe(outputDir)
+    bob.io.base.create_directories_safe(outputDir)
 
   energy        = float(args.energy)
   normalize     = args.normalize
@@ -101,7 +102,7 @@ def main():
 
   #Saving the machines
   if(pca_reduction):
-    hdf5File_pca = bob.io.HDF5File(os.path.join(outputDir, 'pca_machine_'+ str(energy) + '.txt'),openmode_string='w')
+    hdf5File_pca = bob.io.base.HDF5File(os.path.join(outputDir, 'pca_machine_'+ str(energy) + '.txt'),openmode_string='w')
     pcaMachine.save(hdf5File_pca)
     del hdf5File_pca
 

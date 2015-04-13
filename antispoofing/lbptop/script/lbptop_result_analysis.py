@@ -12,7 +12,8 @@ The procedure is described in the paper: "LBP-TOP based countermeasure against f
 
 import os, sys
 import argparse
-import bob
+import bob.io.base
+import bob.measure
 import numpy
 
 from .. import spoof
@@ -77,7 +78,7 @@ def main():
     parser.error("scores-dir directory does not exist")
 
   if not os.path.exists(outputDir): # if the output directory doesn't exist, create it
-    bob.db.utils.makedirs_safe(outputDir)
+    bob.io.base.create_directories_safe(outputDir)
 
   #########
   # Loading some dataset

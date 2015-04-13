@@ -8,7 +8,8 @@
 import os, sys
 import numpy
 import math
-import bob
+import bob.ip.color
+import bob.ip.base
 
 """"
 " Convert a sequence of RGB Frames to a sequence of Gray scale frames and do the face normalization over a given bounding box (bbx) in an image (around the detected face for example).
@@ -33,11 +34,11 @@ def rgbVideo2grayVideo_facenorm(rgbFrameSequence,locations,sz,bbxsize_filter=0):
     bbx = locations[k]
     
     if bbx and bbx.is_valid() and bbx.height > bbxsize_filter:
-      frame = bob.ip.rgb_to_gray(rgbFrameSequence[k,:,:,:])
+      frame = bob.ip.color.rgb_to_gray(rgbFrameSequence[k,:,:,:])
       cutframe = frame[bbx.y:(bbx.y+bbx.height),bbx.x:(bbx.x+bbx.width)] # cutting the box region
       tempbbx = numpy.ndarray((sz, sz), 'float64')
       normbbx = numpy.ndarray((sz, sz), 'uint8')
-      bob.ip.scale(cutframe, tempbbx) # normalization
+      bob.ip.base.scale(cutframe, tempbbx) # normalization
       tempbbx_ = tempbbx + 0.5 #TODO: UNDERSTAND THIS
       tempbbx_ = numpy.floor(tempbbx_)
       normbbx = numpy.cast['uint8'](tempbbx_)
@@ -99,7 +100,7 @@ def getNormFacesFromRange(grayFrameSequence,rangeValues,locations,sz):
 
   #If there is no bounding boxes, this volume will no be analised  
   bbx = getReferenceBoundingBox(locations,rangeValues)
-  if(bbx==None):
+  if(bbx is None):
     return None
 
   selectedFrames = grayFrameSequence[rangeValues]
@@ -111,7 +112,7 @@ def getNormFacesFromRange(grayFrameSequence,rangeValues,locations,sz):
     cutframe = frame[bbx.y:(bbx.y+bbx.height),bbx.x:(bbx.x+bbx.width)] # cutting the box region
     tempbbx = numpy.ndarray((sz, sz), 'float64')
     #normbbx = numpy.ndarray((sz, sz), 'uint8')
-    bob.ip.scale(cutframe, tempbbx) # normalization
+    bob.ip.base.scale(cutframe, tempbbx) # normalization
     tempbbx_ = tempbbx + 0.5
     tempbbx_ = numpy.floor(tempbbx_)
     selectedNormFrames[i] = numpy.cast['uint8'](tempbbx_)
@@ -152,7 +153,7 @@ def getNormFacesFromRange(grayFrameSequence,rangeValues,locations,sz):
 """
 def lbptophist(grayFaceNormFrameSequence,nXY,nXT,nYT,rX,rY,rT,cXY,cXT,cYT,lbptypeXY,lbptypeXT,lbptypeYT,elbptypeXY,elbptypeXT,elbptypeYT,histrogramOutput=True):
   
-  elbps = {'regular':bob.ip.ELBPType.REGULAR, 'transitional':bob.ip.ELBPType.TRANSITIONAL, 'direction_coded':bob.ip.ELBPType.DIRECTION_CODED, 'modified':bob.ip.ELBPType.REGULAR}
+  elbps = {'regular':'regular', 'transitional':'trainsitional', 'direction_coded':'direction-coded', 'modified':'regular'}
 
   uniformXY = False
   riu2XY    = False
@@ -203,27 +204,26 @@ def lbptophist(grayFaceNormFrameSequence,nXY,nXT,nYT,rX,rY,rT,cXY,cXT,cYT,lbptyp
   lbp_YT = 0
 
   #XY
-  lbp_XY = bob.ip.LBP(neighbors = nXY, radius_x=rX, radius_y=rY, circular=cXY, uniform=uniformXY, rotation_invariant=riu2XY, to_average=mctXY, elbp_type=elbps[elbptypeXY])
+  lbp_XY = bob.ip.base.LBP(neighbors = nXY, radius_x=rX, radius_y=rY, circular=cXY, uniform=uniformXY, rotation_invariant=riu2XY, to_average=mctXY, elbp_type=elbps[elbptypeXY])
   #lbp_XY.radius2 = rY
 
   #XT
-  lbp_XT = bob.ip.LBP(neighbors = nXT, radius_x=rT, radius_y=rX, circular=cXT, uniform=uniformXT, rotation_invariant=riu2XT, to_average=mctXT, elbp_type=elbps[elbptypeXT])
+  lbp_XT = bob.ip.base.LBP(neighbors = nXT, radius_x=rT, radius_y=rX, circular=cXT, uniform=uniformXT, rotation_invariant=riu2XT, to_average=mctXT, elbp_type=elbps[elbptypeXT])
   #lbp_XT.radius2 = rT
 
   #YT
-  lbp_YT = bob.ip.LBP(neighbors = nYT, radius_x=rT, radius_y=rY, circular=cYT, uniform=uniformYT, rotation_invariant=riu2YT, to_average=mctYT,elbp_type=elbps[elbptypeYT])
+  lbp_YT = bob.ip.base.LBP(neighbors = nYT, radius_x=rT, radius_y=rY, circular=cYT, uniform=uniformYT, rotation_invariant=riu2YT, to_average=mctYT,elbp_type=elbps[elbptypeYT])
   #lbp_YT.radius2 = rT
 
   #If there is no face in the volume, returns an nan sequence
-  if(grayFaceNormFrameSequence==None):
+  if(grayFaceNormFrameSequence is None):
     histXY = numpy.zeros(shape=(1,lbp_XY.max_label)) * numpy.NaN
     histXT = numpy.zeros(shape=(1,lbp_XT.max_label)) * numpy.NaN
     histYT = numpy.zeros(shape=(1,lbp_YT.max_label)) * numpy.NaN
     return histXY,histXT,histYT
 
-
   #Creating the LBPTop object
-  lbpTop = bob.ip.LBPTop(lbp_XY,lbp_XT,lbp_YT)
+  lbpTop = bob.ip.base.LBPTop(lbp_XY,lbp_XT,lbp_YT)
 
   #Alocating the LBPTop Images
   max_radius = max(lbp_XY.radii[0],lbp_XY.radii[1],lbp_XT.radii[0])
@@ -244,13 +244,14 @@ def lbptophist(grayFaceNormFrameSequence,nXY,nXT,nYT,rX,rY,rT,cXY,cXT,cYT,lbptyp
   YT = numpy.zeros(shape=(tLength,xy_width,xy_height),dtype='uint16')
 
   #If the is no face in the volume, returns an nan sequence
-  if(grayFaceNormFrameSequence==None):
+  if(grayFaceNormFrameSequence is None):
     histXY = numpy.zeros(shape=(XY.shape[0],lbp_XY.max_label)) * numpy.NaN
     histXT = numpy.zeros(shape=(XT.shape[0],lbp_XT.max_label)) * numpy.NaN
     histYT = numpy.zeros(shape=(YT.shape[0],lbp_YT.max_label)) * numpy.NaN
     return histXY,histXT,histYT 
 
   #Calculanting the LBPTop Images
+
   lbpTop(grayFaceNormFrameSequence,XY,XT,YT)
 
   ### Calculating the histograms
@@ -258,21 +259,21 @@ def lbptophist(grayFaceNormFrameSequence,nXY,nXT,nYT,rX,rY,rT,cXY,cXT,cYT,lbptyp
     #XY
     histXY = numpy.zeros(shape=(XY.shape[0],lbp_XY.max_label))
     for i in range(XY.shape[0]):
-      histXY[i] = bob.ip.histogram(XY[i], 0, lbp_XY.max_label-1, lbp_XY.max_label)
+      histXY[i] = bob.ip.base.histogram(XY[i], (0, lbp_XY.max_label-1), lbp_XY.max_label)
       #histogram normalization
       histXY[i] = histXY[i] / sum(histXY[i])
 
     #XT
     histXT = numpy.zeros(shape=(XT.shape[0],lbp_XT.max_label))
     for i in range(XT.shape[0]):
-      histXT[i] = bob.ip.histogram(XT[i], 0, lbp_XT.max_label-1, lbp_XT.max_label)
+      histXT[i] = bob.ip.base.histogram(XT[i], (0, lbp_XT.max_label-1), lbp_XT.max_label)
       #histogram normalization
       histXT[i] = histXT[i] / sum(histXT[i])
 
     #YT
     histYT = numpy.zeros(shape=(YT.shape[0],lbp_YT.max_label))
     for i in range(YT.shape[0]):
-      histYT[i] = bob.ip.histogram(YT[i], 0, lbp_YT.max_label-1, lbp_YT.max_label)
+      histYT[i] = bob.ip.base.histogram(YT[i], (0, lbp_YT.max_label-1), lbp_YT.max_label)
       #histogram normalization
       histYT[i] = histYT[i] / sum(histYT[i])
 
@@ -284,7 +285,7 @@ def lbptophist(grayFaceNormFrameSequence,nXY,nXT,nYT,rX,rY,rT,cXY,cXT,cYT,lbptyp
 
 
 """
- Returna a numpy array with all LBPTOP features
+ Return a numpy array with all LBPTOP features
  
  @param files List of file objects with the data
  @param files Retrieve the nan Lines

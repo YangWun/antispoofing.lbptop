@@ -6,7 +6,7 @@
 """
 
 import numpy
-import bob
+import bob.io.base
 
 
 def average_scores(scores,average_size):
@@ -70,7 +70,7 @@ def saveLBPTOPScoresPredictions(realScores,attackScores,thres,outputFile):
      data[i,realScoresSize:valuesSize,2] = 1
 
 
-  hdf5File = bob.io.HDF5File(outputFile, openmode_string='w')
+  hdf5File = bob.io.base.HDF5File(outputFile, openmode_string='w')
   hdf5File.set('data',data)
   del hdf5File
 
