@@ -11,7 +11,7 @@ import numpy
 from  antispoofing.lbptop.spoof import *
 
 class lbptopTest(unittest.TestCase):
-  '''
+  
   def test01_three_planes_uniform(self):
 
     volume = numpy.random.rand(3,10,10) #Just one output (3 "frames")
@@ -53,7 +53,7 @@ class lbptopTest(unittest.TestCase):
     self.assertTrue(assertXY)
     self.assertTrue(assertXT)
     self.assertTrue(assertYT)
-  '''
+  
 
   def test03_three_planes_regular_rt2(self):
 
@@ -67,9 +67,9 @@ class lbptopTest(unittest.TestCase):
 
     histXY,histXT,histYT = lbptophist(volume,nXY,nXT,nYT,rX,rY,rT,cXY,cXT,cYT,lbptypeXY,lbptypeXT,lbptypeYT,elbptypeXY,elbptypeXT,elbptypeYT)    
 
-    assertXY = histXY.shape = (1,256)
-    assertXT = histXT.shape = (1,256)
-    assertYT = histYT.shape = (1,256)
+    assertXY = histXY.shape == (1,256)
+    assertXT = histXT.shape == (1,256)
+    assertYT = histYT.shape == (1,256)
 
     self.assertTrue(assertXY)
     self.assertTrue(assertXT)
