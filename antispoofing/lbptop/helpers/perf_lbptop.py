@@ -7,10 +7,6 @@ import bob.measure
 import numpy
 from antispoofing.utils.ml import *
 
-import matplotlib; matplotlib.use('pdf') #avoids TkInter threaded start
-from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.pyplot as mpl
-
 from . import *
 
 """
@@ -23,6 +19,7 @@ def roc_lbptop(pos,neg,label,hold=False,linestyle='--',filename="ROC.pdf"):
 
   import matplotlib
   matplotlib.use('pdf')
+  from matplotlib.backends.backend_pdf import PdfPages
   import matplotlib.pyplot as mpl
 
 
@@ -51,6 +48,7 @@ def det_lbptop(pos,neg,label,hold=False,linestyle='--',filename="DET.pdf"):
 
   import matplotlib
   matplotlib.use('pdf')
+  from matplotlib.backends.backend_pdf import PdfPages
   import matplotlib.pyplot as mpl
 
   bob.measure.plot.det(neg, pos, npoints=100,
@@ -113,6 +111,11 @@ Save all the information needed for an LBPTOP based countermeasure
 @param outputDir The output dir to write all that stuff
 """
 def saveCounterMeasureResults(trainRealScores,trainAttackScores,develRealScores,develAttackScores,testRealScores,testAttackScores,thresholds,models,lines,develTexts,testTexts,energy,outputDir,scoresRange=(-5,5)):
+
+  import matplotlib
+  matplotlib.use('pdf')
+  from matplotlib.backends.backend_pdf import PdfPages
+  import matplotlib.pyplot as mpl
 
   ################################
   # Saving the performance table
