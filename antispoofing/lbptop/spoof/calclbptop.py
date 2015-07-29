@@ -91,7 +91,7 @@ def getReferenceBoundingBox(locations,rangeValues):
  @param grayFrameSequence The all frame sequence
  @param rangeValues The range of the volume to be analysed
  @param locations The all face locations
- @param the size of normalized faces
+ @param the size of normalized faces. Tuple of the form (height, width). If None, then normalization will be performed depending on the size of the middle frame
 
  @return The selected volume (selected with the rangeValues) with the normalized faces
 
@@ -103,14 +103,18 @@ def getNormFacesFromRange(grayFrameSequence,rangeValues,locations,sz):
   if(bbx is None):
     return None
 
+  if sz == None: # normalization should be done with respect to face bbx of the middle frame
+    refframe = rangeValues[len(rangeValues)/2] # the middle frame
+    sz = [locations[refframe].height, locations[refframe].width]
+
   selectedFrames = grayFrameSequence[rangeValues]
   nFrames = selectedFrames.shape[0]
-  selectedNormFrames = numpy.zeros(shape=(nFrames,sz,sz),dtype='uint8')
+  selectedNormFrames = numpy.zeros(shape=(nFrames,sz[0],sz[1]),dtype='uint8')
 
   for i in range(nFrames):
     frame = selectedFrames[i]
     cutframe = frame[bbx.y:(bbx.y+bbx.height),bbx.x:(bbx.x+bbx.width)] # cutting the box region
-    tempbbx = numpy.ndarray((sz, sz), 'float64')
+    tempbbx = numpy.ndarray(sz, 'float64')
     #normbbx = numpy.ndarray((sz, sz), 'uint8')
     bob.ip.base.scale(cutframe, tempbbx) # normalization
     tempbbx_ = tempbbx + 0.5
@@ -208,13 +212,14 @@ def lbptophist(grayFaceNormFrameSequence,nXY,nXT,nYT,rX,rY,rT,cXY,cXT,cYT,lbptyp
   #lbp_XY.radius2 = rY
 
   #XT
-  lbp_XT = bob.ip.base.LBP(neighbors = nXT, radius_x=rT, radius_y=rX, circular=cXT, uniform=uniformXT, rotation_invariant=riu2XT, to_average=mctXT, elbp_type=elbps[elbptypeXT])
+  lbp_XT = bob.ip.base.LBP(neighbors = nXT, radius_x=rX, radius_y=rT, circular=cXT, uniform=uniformXT, rotation_invariant=riu2XT, to_average=mctXT, elbp_type=elbps[elbptypeXT])
   #lbp_XT.radius2 = rT
 
+  
   #YT
-  lbp_YT = bob.ip.base.LBP(neighbors = nYT, radius_x=rT, radius_y=rY, circular=cYT, uniform=uniformYT, rotation_invariant=riu2YT, to_average=mctYT,elbp_type=elbps[elbptypeYT])
+  lbp_YT = bob.ip.base.LBP(neighbors = nYT, radius_x=rY, radius_y=rT, circular=cYT, uniform=uniformYT, rotation_invariant=riu2YT, to_average=mctYT,elbp_type=elbps[elbptypeYT])
   #lbp_YT.radius2 = rT
-
+  
   #If there is no face in the volume, returns an nan sequence
   if(grayFaceNormFrameSequence is None):
     histXY = numpy.zeros(shape=(1,lbp_XY.max_label)) * numpy.NaN
