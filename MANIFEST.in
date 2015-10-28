@@ -1,1 +1,3 @@
-include *.rst bootstrap.py *.cfg
+include *.rst bootstrap.py *.cfg version.txt
+exclude .installed.cfg
+
