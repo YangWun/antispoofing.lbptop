@@ -166,7 +166,6 @@ def main():
 
     #Loading the file
     filename = str(obj.videofile(inputDir))
-
     #Loading the video
     input = bob.io.video.reader(filename)
 

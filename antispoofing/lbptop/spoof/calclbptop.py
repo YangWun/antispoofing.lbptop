@@ -238,9 +238,9 @@ def lbptophist(grayFaceNormFrameSequence,nXY,nXT,nYT,rX,rY,rT,cXY,cXT,cYT,lbptyp
   width      = grayFaceNormFrameSequence.shape[1]
   height     = grayFaceNormFrameSequence.shape[2]
 
-  xy_width  = width      - (max_radius * 2)
-  xy_height = height     - (max_radius * 2)
-  tLength   = timeLength - (max_radius * 2)
+  xy_width  = int(width      - (max_radius * 2))
+  xy_height = int(height     - (max_radius * 2))
+  tLength   = int(timeLength - (max_radius * 2))
 
 
   #Creating the LBP Images for each direction
@@ -303,7 +303,7 @@ def create_full_dataset(files,inputDir,retrieveNanLines=False):
   for obj in files:
 
     filename = str(obj.make_path(inputDir,extension='.hdf5'))
-    fvs = bob.io.load(filename)
+    fvs = bob.io.base.load(filename)
 
     if dataset is None:
       #each individual plane

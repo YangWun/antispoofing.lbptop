@@ -48,6 +48,9 @@ def main():
 
   parser.add_argument('-s', '--score', dest='score', action='store_true', default=False, help='If set, the final classification scores of all the frames will be dumped in a file')
 
+  parser.add_argument('-p', '--use-pinv', dest='use_pinv', action='store_true', default=False, help='If set, will use the pseudo inverse to compute  S_w^{-1}S_b')
+
+
 
   #######
   # Database especific configuration
@@ -96,19 +99,18 @@ def main():
   if(verbose):
     print("Training the LDA machine ... ")
 
-
-  [ldaMachine,pcaMachine] = ldaCountermeasure.train(train_real_features, train_attack_features, normalize=normalize, pca_reduction=pca_reduction,energy=energy)
+  [ldaMachine,pcaMachine] = ldaCountermeasure.train(train_real_features, train_attack_features, normalize=normalize, pca_reduction=pca_reduction,energy=energy, use_pinv=args.use_pinv)
 
   if(verbose):
     print("Saving the machines")
 
   #### Saving the machines
   if(pca_reduction):
-    hdf5File_pca = bob.io.base.HDF5File(os.path.join(outputDir, 'pca_machine_'+ str(energy) + '.txt'),openmode_string='w')
+    hdf5File_pca = bob.io.base.HDF5File(os.path.join(outputDir, 'pca_machine_'+ str(energy) + '.hdf5'),'w')
     pcaMachine.save(hdf5File_pca)
     del hdf5File_pca
 
-  hdf5File_lda = bob.io.base.HDF5File(os.path.join(outputDir, 'lda_machine_'+ str(energy) + '.txt'),openmode_string='w')
+  hdf5File_lda = bob.io.base.HDF5File(os.path.join(outputDir, 'lda_machine_'+ str(energy) + '.hdf5'),'w')
   ldaMachine.save(hdf5File_lda)
   del hdf5File_lda
 
