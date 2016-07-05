@@ -227,15 +227,15 @@ def main():
         vin = input.load()  # load the video
 
         nFrames = vin.shape[0]
-
         # Converting all frames to grayscale
-        grayFrames = numpy.zeros(shape=(nFrames, vin.shape[2], vin.shape[3]))
+        grayFrames = numpy.zeros(shape=(nFrames, vin.shape[2], vin.shape[3]), dtype="uint8")
         for i in range(nFrames):
             grayFrames[i] = bob.ip.color.rgb_to_gray(vin[i, :, :, :])
             if string.find(database.short_description(),
                            "MSU") != -1 and obj.is_rotated():  # rotate the frame by 180 degrees if needed
                 grayFrames[i] = numpy.rot90(numpy.rot90(grayFrames[i]))
             if (tan_triggs):
+                grayFrames = grayFrames.astype("float64")
                 grayFrames[i] = tantriggs(grayFrames[i])
 
         del vin
@@ -301,6 +301,7 @@ def main():
 
         sys.stdout.write('\n')
         sys.stdout.flush()
+        import ipdb; ipdb.set_trace();
 
         if (all_planes):
             obj.save(histVolumeXY, directory=os.path.join(directory, 'XY'), extension='.hdf5')
