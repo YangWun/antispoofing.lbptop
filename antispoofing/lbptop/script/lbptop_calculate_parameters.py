@@ -226,8 +226,6 @@ def main():
         # start the work here...
         vin = input.load()  # load the video
 
-        import ipdb; ipdb.set_trace();
-
         nFrames = vin.shape[0]
 
         # Converting all frames to grayscale
