@@ -301,7 +301,6 @@ def main():
 
         sys.stdout.write('\n')
         sys.stdout.flush()
-        import ipdb; ipdb.set_trace();
 
         if (all_planes):
             obj.save(histVolumeXY, directory=os.path.join(directory, 'XY'), extension='.hdf5')
